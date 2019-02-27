@@ -2,12 +2,6 @@ var inquirer = require('inquirer');
 var mysql = require('mysql');
 var Table = require('cli-table')
 
-
-
-
-
-
-
 //Sets up a connection to my database
 var connection = mysql.createConnection({
   host: 'localhost',
@@ -19,17 +13,19 @@ var connection = mysql.createConnection({
 //Initializes the connection
 connection.connect();
 
-let choices = []
+// let choices = []
 
-connection.query('SELECT * FROM products', function (error, results) {
-  if (error) throw error;
-  for (i = 0; i<results.length; i++) {
-    choices.push(results[i].product_name)
-  }
-})
+// connection.query('SELECT * FROM products', function (error, results) {
+//   if (error) throw error;
+//   for (i = 0; i<results.length; i++) {
+//     choices.push(results[i].product_name)
+//   }
+// })
 
+//Empty array to put profits into
 let departmentProfits = []
 
+//Generates an array of the sum of different departments
 connection.query("SELECT product_sales, department_name, SUM(product_sales) AS amount FROM products GROUP BY department_name ORDER BY department_name asc", function(error, results) {
   if (error) throw error;
   for (i=0; i<results.length;i++) {
@@ -38,9 +34,13 @@ connection.query("SELECT product_sales, department_name, SUM(product_sales) AS a
   console.log(departmentProfits);
 }) 
 
+//Empty array to push totalProfits
 let totalProfit = []
+
+//Empty array to push overhead costs
 let over_head_costs = []
 
+//Function that calculates total profit for each department
 function calcTotalProfit() {
   for (i=0; i<over_head_costs.length;i++) {
     totalProfit.push(departmentProfits[i] - over_head_costs[i])
@@ -59,9 +59,14 @@ inquirer.prompt([
 ]).then(answers => {
   if (answers.managerOptions === "View Product Sales by Department") {
 
+    //pulls column names from database
     connection.query("SHOW COLUMNS FROM departments", function (error, results) {
       if (error) throw error;
+
+      //an empty array to push all the headers
       var tableHeaders = [];
+
+      //Adds the headers
       function addHeaders() {
         for (i=0; i<results.length; i++) {
           tableHeaders.push(results[i].Field);
@@ -72,18 +77,21 @@ inquirer.prompt([
       
       connection.query("SELECT * FROM departments ORDER BY department_name asc", function (error, results) {
 
-        
-
-
+        //Generates a table in the console
         var table = new Table({
           head: tableHeaders,
           colWidths: [20,20,20,20,20]
         });
         if (error) throw error;
+        //Overhead costs for all departments are pushed to the array
         for(i=0; i<results.length;i++) {
           over_head_costs.push(results[i].over_head_costs)
         }
+
+        //Total profit is then calculated
         calcTotalProfit();
+
+        //All the relevant info is pushed to the table
         for (i=0; i<results.length; i++) {  
           table.push(
             [results[i].department_id, results[i].department_name, results[i].over_head_costs, departmentProfits[i], totalProfit[i]]
@@ -115,6 +123,7 @@ inquirer.prompt([
         message:"What will be the overhead cost of this department?"
       }
     ]).then(answers => {
+      //Fun "feature" where product sales won't line up unless you add an item with some sales belonging to the department you just added
       connection.query(`INSERT IGNORE INTO departments VALUE (${answers.departmentId}, "${answers.departmentName}", ${answers.overhead})`, function(error, results) {
         if (error) throw error;
         console.log("Department added");
