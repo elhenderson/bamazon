@@ -99,6 +99,7 @@ inquirer.prompt([
         }
           
           console.log(table.toString())
+          connection.end();
       })
 
     })
@@ -127,7 +128,9 @@ inquirer.prompt([
       connection.query(`INSERT IGNORE INTO departments VALUE (${answers.departmentId}, "${answers.departmentName}", ${answers.overhead})`, function(error, results) {
         if (error) throw error;
         console.log("Department added");
+        connection.end();
       })
     })
+    
   }
 })
