@@ -12,6 +12,14 @@ var connection = mysql.createConnection({
 //Initializes the connection
 connection.connect();
 
+let choices = []
+
+connection.query('SELECT * FROM products', function (error, results) {
+  if (error) throw error;
+  for (i = 0; i<results.length; i++) {
+    choices.push(results[i].product_name)
+  }
+})
 
 inquirer.prompt([
   {
@@ -43,7 +51,7 @@ inquirer.prompt([
         type: "list",
         name: "whichItem",
         message: "Which item do you want to add?",
-        choices: ["Steering Wheel Attachable Work Surface Tray", `Horse\ Head\ Mask`, "Tile ED-11001", "Vufine+", "Divoom aurabox Bluetooth 4.0 Smart LED Speaker", "Pelican Air 1615 Case with Foam", "16GB Mini Mike Wazowski", "Knock Knock Personal Library Kit", "Flower Boy LP", "Obama: An Intimate Portrait"]
+        choices: choices
       },
       {
         type: "input",
@@ -59,15 +67,50 @@ inquirer.prompt([
         }
       }
     ]).then(answers => {
-      connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${answers.howMany} WHERE product_name = ${answers.whichItem}`, function(err, results) {
+
+      function whereItAt(element) {
+       return element === answers.whichItem
+      }
+      var item_id = choices.findIndex(whereItAt) + 1
+      connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${answers.howMany} WHERE item_id = ${item_id}`, function(err, results) {
         if (err) throw err;
-        console.log(results);
         console.log(`${answers.howMany} ${answers.whichItem} have been added to inventory`)
       connection.end();
     })
   })
 
   } else if (answers.managerOptions === "Add New Product") {
-
+    inquirer.prompt([
+      {
+        type: "input",
+        name: "productName",
+        message: "What is the name of the product you're adding?"
+      },
+      {
+        type: "input",
+        name: "departmentName",
+        message: "To which department does this product belong?"
+      },
+      {
+        type: "input",
+        name: "price",
+        message: "What is the price of this product?"
+      },
+      {
+        type: "input",
+        name: "stock",
+        message: "How much of this product do you want to add?"
+      },
+      {
+        type: "input",
+        name: "id",
+        message: "What is the ID of this item?"
+      }
+    ]).then(answers => {
+      connection.query(`INSERT INTO products VALUE ("${answers.productName}", "${answers.departmentName}", "${answers.price}", "${answers.stock}", "${answers.id}")`, function(err, results) {
+        if (err) throw err;
+        console.log(`${answers.stock} ${answers.productName} have been added to the database.`)
+      })
+    })
   }
 })
