@@ -35,6 +35,7 @@ connection.query("SELECT product_sales, department_name, SUM(product_sales) AS a
   for (i=0; i<results.length;i++) {
     departmentProfits.push(results[i].amount);    
   }
+  console.log(departmentProfits);
 }) 
 
 let totalProfit = []
