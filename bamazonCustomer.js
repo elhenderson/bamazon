@@ -13,6 +13,15 @@ var connection = mysql.createConnection({
 //Initializes the connection
 connection.connect();
 
+let choices = []
+
+connection.query('SELECT * FROM products', function (error, results) {
+  if (error) throw error;
+  for (i = 0; i<results.length; i++) {
+    choices.push(results[i].product_name)
+  }
+})
+
 //First query which lists out all available products
 connection.query('SELECT * FROM products', function (error, results) {
   if (error) throw error;
@@ -28,7 +37,7 @@ inquirer.prompt([
     name: 'productId',
     message: "Please input the ID of the product you would like to purchase.",
     validate: function(input) {
-      if (!input.match(/[0-9]/) || input >= 11) {
+      if (!input.match(/[0-9]/) || input > choices.length) {
         console.log(`\nEnter a valid product ID\n`)
         return false
       } else {
@@ -76,6 +85,9 @@ inquirer.prompt([
           if (err) throw err;
           console.log(`Database updated!\n`)
         })
+        connection.query(`UPDATE products SET product_sales = product_sales + ${total} WHERE item_id=${answers.productId}`), function(err, results) {
+          if (err) throw err;
+        }
         connection.end();
       //if there is not inventory
       } else if (results[productId].stock_quantity <= 0) {

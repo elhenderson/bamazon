@@ -107,7 +107,7 @@ inquirer.prompt([
         message: "What is the ID of this item?"
       }
     ]).then(answers => {
-      connection.query(`INSERT INTO products VALUE ("${answers.productName}", "${answers.departmentName}", "${answers.price}", "${answers.stock}", "${answers.id}")`, function(err, results) {
+      connection.query(`INSERT IGNORE INTO products VALUE ("${answers.productName}", "${answers.departmentName}", ${answers.price}, ${answers.stock}, ${answers.id}, ${0})`, function(err, results) {
         if (err) throw err;
         console.log(`${answers.stock} ${answers.productName} have been added to the database.`)
       })
