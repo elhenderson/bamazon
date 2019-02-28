@@ -15,35 +15,24 @@ connection.connect();
 
 let choices = []
 
+
+
 connection.query('SELECT * FROM products', function (error, results) {
   if (error) throw error;
-  for (i = 0; i<results.length; i++) {
-    choices.push(results[i].product_name)
+  for (let i = 0; i<results.length; i++) {
+    choices.push(`${results[i].product_name}`)
   }
 })
 
-//First query which lists out all available products
-connection.query('SELECT * FROM products', function (error, results) {
-  if (error) throw error;
-  for (i = 0; i<results.length; i++) {
-    console.log(`Product Name: ${results[i].product_name}\nDepartment Name: ${results[i].department_name}\nPrice: ${results[i].price}\nStock Quantity: ${results[i].stock_quantity}\nItem ID: ${results[i].item_id}\n`);
-  }
-})
 
 //Once the customer sees the list, they choose which product they want via the id, then pick a quantity
+setTimeout(function() {
 inquirer.prompt([ 
   {
-    type: "input",
-    name: 'productId',
-    message: "Please input the ID of the product you would like to purchase.",
-    validate: function(input) {
-      if (!input.match(/[0-9]/) || input > choices.length) {
-        console.log(`\nEnter a valid product ID\n`)
-        return false
-      } else {
-        return true
-      }
-    }
+    type: "list",
+    name: 'productName',
+    message: "Please choose an item to purchase",
+    choices: choices
   },
   {
     type: "input",
@@ -59,38 +48,39 @@ inquirer.prompt([
     }
   }
 ]).then(answers => {
+  console.log(answers.productName)
   //Puts the item_id into a variable less 1, so that it lines up with what the query spits out
-  let productId = answers.productId - 1
+  // let productId = answers.productId - 1
 
   //Second query 
-  connection.query('SELECT * from products', function(error, results) {
+  connection.query(`SELECT * FROM products WHERE ?`, {product_name: answers.productName}, function(error, results) {
     if (error) throw error;
-    console.log(`\nYou chose: ${answers.howMany} ${results[productId].product_name}\n`);
+    console.log(`\nYou chose: ${answers.howMany} ${results[0].product_name}\n`);
 
     console.log(`Checking store inventory...\n`)
 
     
 
-    let total = results[productId].price * answers.howMany;
+    let total = results[0].price * answers.howMany;
 
     //Timeout function for realism
     setTimeout(function() {
 
       //if there is inventory
-      if (results[productId].stock_quantity > 0) {
+      if (results[0].stock_quantity > 0) {
         //lists total to customer
         console.log(`Your total is: $${total}\n`);
         //Subtracts amount of product from database
-        connection.query(`UPDATE products SET stock_quantity = stock_quantity - ${answers.howMany} WHERE item_id=${answers.productId}`, function(err, result) {
+        connection.query(`UPDATE products SET stock_quantity = stock_quantity - ${answers.howMany} WHERE ?`, {product_name: answers.productName},  function(err, result) {
           if (err) throw err;
           console.log(`Database updated!\n`)
         })
-        connection.query(`UPDATE products SET product_sales = product_sales + ${total} WHERE item_id=${answers.productId}`), function(err, results) {
+        connection.query(`UPDATE products SET product_sales = product_sales + ${total} WHERE ?`, {product_name: answers.productName}, function(err, results) {
           if (err) throw err;
-        }
+        })
         connection.end();
       //if there is not inventory
-      } else if (results[productId].stock_quantity <= 0) {
+      } else if (results[0].stock_quantity <= 0) {
         console.log("\x1b[31m", "Insufficient inventory!");
         console.log("\x1b[0m")
         connection.end();
@@ -98,6 +88,7 @@ inquirer.prompt([
     }, 3000)
   }) 
 })
+}, 500)
 
 
 
