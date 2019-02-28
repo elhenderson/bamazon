@@ -23,10 +23,9 @@ DROP TABLE IF EXISTS `departments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `departments` (
-  `department_id` int(11) NOT NULL,
+  `department_id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `department_name` varchar(100) DEFAULT NULL,
-  `over_head_costs` decimal(8,2) DEFAULT NULL,
-  PRIMARY KEY (`department_id`)
+  `over_head_costs` decimal(8,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -36,7 +35,7 @@ CREATE TABLE `departments` (
 
 LOCK TABLES `departments` WRITE;
 /*!40000 ALTER TABLE `departments` DISABLE KEYS */;
-INSERT INTO `departments` VALUES (1,'Electronics',300.00),(2,'Toys & Games',200.00),(3,'Automotive Parts & Accessories',500.00),(4,'Cell Phones & Accessories',150.00),(5,'CDs & Vinyl',20.00),(6,'Office Products',100.00),(7,'Books',10.00),(8,'Cooking',100.00);
+INSERT INTO `departments` VALUES (NULL,'Electronics',300.00),(NULL,'Toys & Games',200.00),(NULL,'Automotive Parts & Accessories',500.00),(NULL,'Cell Phones & Accessories',150.00),(NULL,'CDs & Vinyl',20.00),(NULL,'Office Products',100.00),(NULL,'Books',10.00),(NULL,'Cooking',100.00);
 /*!40000 ALTER TABLE `departments` ENABLE KEYS */;
 UNLOCK TABLES;
 

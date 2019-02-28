@@ -12,8 +12,8 @@ var connection = mysql.createConnection({
 //Initializes the connection
 connection.connect();
 
+//an array of current products to prevent similar names for same item
 let choices = []
-
 connection.query('SELECT * FROM products', function (error, results) {
   if (error) throw error;
   for (i = 0; i<results.length; i++) {
@@ -130,7 +130,6 @@ inquirer.prompt([
     ]).then(answers => {
       connection.query(`INSERT IGNORE INTO products VALUE ("${answers.productName}", "${answers.departmentName}", ${answers.price}, ${answers.stock}, 'null', ${0})`, function(err, results) {
         if (err) throw err;
-        console.log(results);
         console.log(`${answers.stock} ${answers.productName} have been added to the database.`)
         connection.end();
       })
