@@ -23,7 +23,7 @@ connection.query("SELECT department_name, product_sales, SUM(product_sales) AS a
   for (let i=0; i<(results.length);i++) {
     departmentProfits.push(results[i].amount);    
   }
-}, 1000)
+}, 250)
 }) 
 
 //Empty array to push totalProfits
