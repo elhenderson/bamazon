@@ -21,6 +21,15 @@ connection.query('SELECT * FROM products', function (error, results) {
   }
 })
 
+//An array of departments to prevent similar names for the same department
+let departments = [];
+connection.query("SELECT * FROM departments", function (err, results) {
+  if (err) throw err;
+  for (let i=0; i<results.length; i++) {
+    departments.push(results[i].department_name);
+  }
+})
+
 inquirer.prompt([
   {
     type: "list",
@@ -74,7 +83,7 @@ inquirer.prompt([
       var item_id = choices.findIndex(whereItAt) + 1
       connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${answers.howMany} WHERE item_id = ${item_id}`, function(err, results) {
         if (err) throw err;
-        console.log(`${answers.howMany} ${answers.whichItem} have been added to inventory`)
+        console.log(`Inventory + ${answers.howMany} ${answers.whichItem} `)
       connection.end();
     })
   })
@@ -87,29 +96,43 @@ inquirer.prompt([
         message: "What is the name of the product you're adding?"
       },
       {
-        type: "input",
+        type: "list",
         name: "departmentName",
-        message: "To which department does this product belong?"
+        message: "To which department does this product belong?",
+        choices: departments
       },
       {
         type: "input",
         name: "price",
-        message: "What is the price of this product?"
+        message: "What is the price of this product?",
+        validate: function(input) {
+          if (!input.match(/[0-9]/)) {
+            console.log(`\nEnter an integer\n`)
+            return false
+          } else {
+            return true
+          }
+        }
       },
       {
         type: "input",
         name: "stock",
-        message: "How much of this product do you want to add?"
-      },
-      {
-        type: "input",
-        name: "id",
-        message: "What is the ID of this item?"
+        message: "How much of this product do you want to add?",
+        validate: function(input) {
+          if (!input.match(/[0-9]/)) {
+            console.log(`\nEnter an integer\n`)
+            return false
+          } else {
+            return true
+          }
+        }
       }
     ]).then(answers => {
-      connection.query(`INSERT IGNORE INTO products VALUE ("${answers.productName}", "${answers.departmentName}", ${answers.price}, ${answers.stock}, ${answers.id}, ${0})`, function(err, results) {
+      connection.query(`INSERT IGNORE INTO products VALUE ("${answers.productName}", "${answers.departmentName}", ${answers.price}, ${answers.stock}, 'null', ${0})`, function(err, results) {
         if (err) throw err;
+        console.log(results);
         console.log(`${answers.stock} ${answers.productName} have been added to the database.`)
+        connection.end();
       })
     })
   }

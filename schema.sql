@@ -52,9 +52,8 @@ CREATE TABLE `products` (
   `department_name` varchar(100) DEFAULT NULL,
   `price` decimal(6,2) DEFAULT NULL,
   `stock_quantity` int(11) DEFAULT NULL,
-  `item_id` int(11) NOT NULL,
-  `product_sales` int(11) NOT NULL,
-  PRIMARY KEY (`item_id`)
+  `item_id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `product_sales` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -64,7 +63,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES ('Steering Wheel Attachable Work Surface Tray','Automotive Parts & Accessories',20.99,8,1,0),('Horse Head Mask','Toys & Games',21.24,6,2,0),('Tile ED-11001','Cell Phones & Accessories',20.49,5,3,0),('Vufine+','Electronics',159.79,7,4,0),('Divoom Aurabox Bluetooth 4.0 Smart LED Speaker','Electronics',40.40,50,5,2020),('Pelican Air 1615 Case With Foam','Electronics',312.54,72,6,0),('16GB Mini Mike, Wazowski','Electronics',4.56,50,7,0),('Knock Knock Personal Library Kit','Office Products',16.66,32,8,0),('Flower Boy LP','CDs & Vinyl',24.35,67,9,0),('Obama: An Intimate Portrait','Books',31.42,87,10,0),('Candy','Food',1.39,5,11,0),('Toy','Toys & Games',29.99,1,12,0),('spoon','Cooking',1.00,5,13,20);
+INSERT INTO `products` VALUES ('Steering Wheel Attachable Work Surface Tray','Automotive Parts & Accessories',20.99,8,null,0),('Horse Head Mask','Toys & Games',21.24,6,null,0),('Tile ED-11001','Cell Phones & Accessories',20.49,5,null,0),('Vufine+','Electronics',159.79,7,null,0),('Divoom Aurabox Bluetooth 4.0 Smart LED Speaker','Electronics',40.40,50,null,2020),('Pelican Air 1615 Case With Foam','Electronics',312.54,72,null,0),('16GB Mini Mike, Wazowski','Electronics',4.56,50,null,0),('Knock Knock Personal Library Kit','Office Products',16.66,32,null,0),('Flower Boy LP','CDs & Vinyl',24.35,67,null,0),('Obama: An Intimate Portrait','Books',31.42,87,null,0),('Candy','Food',1.39,5,null,0),('Toy','Toys & Games',29.99,1,null,0),('spoon','Cooking',1.00,5,null,20);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
