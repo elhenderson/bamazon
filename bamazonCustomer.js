@@ -49,8 +49,6 @@ inquirer.prompt([
   }
 ]).then(answers => {
   console.log(answers.productName)
-  //Puts the item_id into a variable less 1, so that it lines up with what the query spits out
-  // let productId = answers.productId - 1
 
   //Second query 
   connection.query(`SELECT * FROM products WHERE ?`, {product_name: answers.productName}, function(error, results) {
